@@ -1,0 +1,5 @@
+{
+  "watch": ["src", "maindb.js"],
+  "ignore": ["node_modules", "logs", "dist"]
+}
+
