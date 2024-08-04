@@ -152,3 +152,8 @@ Don’t forget to run <pre><code>$ npm install</pre></code> when you have the pa
 a folder containing
  * [redis.js](./redis.js)
  * [db.js](./db.js)
+
+
+ # STEPS
+ ## [REDIS.JS and DB.JS](./utils/README.md)
+ First created the redis.js and db.js files in utils.
