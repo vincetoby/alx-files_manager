@@ -68,4 +68,16 @@ router.get('/files/:id', FilesController.getShow);
  */
 router.get('/files', FilesController.getIndex);
 
+/**
+ * PUT /files/:id/publish
+ * @summary Updates the visibility of a file to public
+ */
+router.put('/files/:id/publish', FilesController.putPublish);
+
+/**
+ * PUT /files/:id/unpublish
+ * @summary Updates the visibility of a file to private
+ */
+router.put('/files/:id/unpublish', FilesController.putUnpublish);
+
 export default router;
