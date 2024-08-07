@@ -80,4 +80,11 @@ router.put('/files/:id/publish', FilesController.putPublish);
  */
 router.put('/files/:id/unpublish', FilesController.putUnpublish);
 
+/**
+ * GET /files/:id/data
+ * @summary Returns the content of the file document based on the ID.
+ */
+router.get('/files/:id/data', FilesController.getFile);
+
+
 export default router;
