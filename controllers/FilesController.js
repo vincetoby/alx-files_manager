@@ -17,7 +17,7 @@ class FilesController {
     const token = req.headers['x-token'];
     const userId = await redisClient.get(`auth_${token}`);
 
-    // Check if the user is authenticatedcontrollers/FilesController.js
+    // Check if the user is authenticated
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
