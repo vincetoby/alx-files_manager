@@ -34,41 +34,38 @@ router.post('/users', UsersController.postNew);
 
 /**
  * GET /connect
- * @summary
- * @returns
+ * @summary Authenticates user and returns a token
  */
 router.get('/connect', AuthController.getConnect);
 
 /**
  * GET /disconnect
- * @summary
- * @returns
+ * @summary Logs out the user by invalidating the token
  */
 router.get('/disconnect', AuthController.getDisconnect);
 
 /**
  * GET /users/me
- * @summary
- * @returns
+ * @summary Retrieves information about the authenticated user
  */
 router.get('/users/me', UsersController.getMe);
 
+/**
+ * POST /files
+ * @summary Uploads a new file
+ */
 router.post('/files', FilesController.postUpload);
 
-// should retrieve the file document based on the ID
+/**
+ * GET /files/:id
+ * @summary Retrieves a file document by ID
+ */
 router.get('/files/:id', FilesController.getShow);
 
-// should retrieve all users file documents for a
-// specific parentId and with pagination
+/**
+ * GET /files
+ * @summary Retrieves all file documents for a specific parentId with pagination
+ */
 router.get('/files', FilesController.getIndex);
-
-// should set isPublic to true on the file document based on the ID
-router.put('/files/:id/publish', FilesController.putPublish);
-
-// should set isPublic to false on the file document based on the ID
-router.put('/files/:id/unpublish', FilesController.putUnpublish);
-
-// should return the content of the file document based on the ID
-router.get('/files/:id/data', FilesController.getFile);
 
 export default router;
