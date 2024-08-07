@@ -52,4 +52,22 @@ router.get('/disconnect', AuthController.getDisconnect);
  */
 router.get('/users/me', UsersController.getMe);
 
+router.post('/files', FilesController.postUpload);
+
+// should retrieve the file document based on the ID
+router.get('/files/:id', FilesController.getShow);
+
+// should retrieve all users file documents for a
+// specific parentId and with pagination
+router.get('/files', FilesController.getIndex);
+
+// should set isPublic to true on the file document based on the ID
+router.put('/files/:id/publish', FilesController.putPublish);
+
+// should set isPublic to false on the file document based on the ID
+router.put('/files/:id/unpublish', FilesController.putUnpublish);
+
+// should return the content of the file document based on the ID
+router.get('/files/:id/data', FilesController.getFile);
+
 export default router;
