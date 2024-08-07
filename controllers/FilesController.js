@@ -1,4 +1,5 @@
-// controllers/FilesController.js
+//controllers/FilesController.js
+
 import { v4 as uuidv4 } from 'uuid';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -8,16 +9,23 @@ import redisClient from '../utils/redis';
 const FOLDER_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
 
 class FilesController {
+  /**
+   * Handles POST requests to '/files' to upload a new file.
+   */
   static async postUpload(req, res) {
+    // Retrieve the token from request headers
     const token = req.headers['x-token'];
     const userId = await redisClient.get(`auth_${token}`);
 
+    // Check if the user is authenticatedcontrollers/FilesController.js
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
+    // Extract file information from request body
     const { name, type, parentId = 0, isPublic = false, data } = req.body;
 
+    // Validate file information
     if (!name) {
       return res.status(400).json({ error: 'Missing name' });
     }
@@ -31,6 +39,7 @@ class FilesController {
       return res.status(400).json({ error: 'Missing data' });
     }
 
+    // Check if parentId is valid (if applicable)
     let parentFile = null;
     if (parentId !== 0) {
       parentFile = await dbClient.findFileById(parentId);
@@ -44,6 +53,7 @@ class FilesController {
       }
     }
 
+    // Prepare file data for storage
     const fileData = {
       userId,
       name,
@@ -52,6 +62,7 @@ class FilesController {
       parentId,
     };
 
+    // Handle different file types (folder vs. file)
     if (type === 'folder') {
       const newFile = await dbClient.createFile(fileData);
       return res.status(201).json(newFile);
@@ -70,7 +81,59 @@ class FilesController {
     }
   }
 
-  // Implement other methods for FilesController if needed
+  /**
+   * Handles GET requests to '/files/:id' to retrieve a file document by ID.
+   */
+  static async getShow(req, res) {
+    // Retrieve the token from request headers
+    const token = req.headers['x-token'];
+    const userId = await redisClient.get(`auth_${token}`);
+
+    // Check if the user is authenticated
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Retrieve file ID from request parameters
+    const { id } = req.params;
+    const file = await dbClient.findFileById(id);
+
+    // Check if file belongs to the authenticated user
+    if (!file || file.userId !== userId) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    return res.status(200).json(file);
+  }
+
+  /**
+   * Handles GET requests to '/files' to retrieve files based on parentId with pagination.
+   */
+  static async getIndex(req, res) {
+    // Retrieve the token from request headers
+    const token = req.headers['x-token'];
+    const userId = await redisClient.get(`auth_${token}`);
+
+    // Check if the user is authenticated
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Retrieve query parameters
+    const { parentId = 0, page = 0 } = req.query;
+    const pageSize = 20;
+
+    // Define aggregation pipeline for MongoDB
+    const pipeline = [
+      { $match: { userId, parentId } },
+      { $skip: page * pageSize },
+      { $limit: pageSize },
+    ];
+
+    // Retrieve files based on aggregation pipeline
+    const files = await dbClient.client.db(dbClient.dbName).collection('files').aggregate(pipeline).toArray();
+    return res.status(200).json(files);
+  }
 }
 
 export default FilesController;
